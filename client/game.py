@@ -42,12 +42,14 @@ def redraw(window: pygame.Surface, game_state: str):
 def main():
     """Runs the main game loop."""
     game_state: str = "menu"
-    while True:
+
+    game_running = True
+    while game_running:
         events: list[pygame.event.Event] = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                game_running = False
+
         if run_result := state_map[game_state].update(events):
             if run_result == "server":
                 # Start server as subprocess
