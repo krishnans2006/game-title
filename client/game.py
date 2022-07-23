@@ -12,6 +12,7 @@ pygame.init()
 
 win: pygame.Surface = pygame.display.set_mode((c.W, c.H))
 pygame.display.set_caption("The Game :D")
+pygame.key.set_repeat(500, 50)
 
 clock: pygame.time.Clock = pygame.time.Clock()
 

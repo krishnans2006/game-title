@@ -1,5 +1,7 @@
 import pygame
 
+from client import config as c
+
 
 class Rectangle(pygame.Rect):
     """A subclassed pygame.Rect with built-in display and highlight functionality.
@@ -66,6 +68,32 @@ class Rectangle(pygame.Rect):
     def unhighlight(self):
         """Unhighlights the rectangle by setting its color to the default color."""
         self.color = self.default_color
+
+    def move(self, direction: str, distance: int):
+        """Moves the rectangle in a direction by a certain distance.
+
+        Args:
+            direction: The direction to move the rectangle in.
+            distance: The distance to move the rectangle.
+
+        """
+        if direction == "up":
+            self.y -= distance
+        elif direction == "down":
+            self.y += distance
+        elif direction == "left":
+            self.x -= distance
+        elif direction == "right":
+            self.x += distance
+
+        if self.x < 0:
+            self.x = 0
+        if self.y < 0:
+            self.y = 0
+        if self.x + self.width > c.W:
+            self.x = c.W - self.width
+        if self.y + self.height > c.H:
+            self.y = c.H - self.height
 
     def redraw(self):
         """Redraws the rectangle on the window."""
