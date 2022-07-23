@@ -1,3 +1,1 @@
-from subprocess import Popen
-
-Popen("python client/game.py")
+from client import game  # noqa: F401
