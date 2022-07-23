@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+"""Websocket client side test script."""
 
 import asyncio
+
 import websockets
 
 
 async def connect():
-    """Websocket client"""
-
+    """Websocket client."""
     WS_URL = "ws://127.0.0.1:"
     WS_PORT = "8765"
     URI = f"{WS_URL}{WS_PORT}"
