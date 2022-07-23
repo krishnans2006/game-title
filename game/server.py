@@ -8,30 +8,37 @@ import websockets
 ACTIVE_CONNECTIONS = set()
 
 
-async def connection_handler(websocket: websockets) -> websockets:
-    """
-    Websocket connection handler.
+def remove_inactive_connection(websocket_id) -> None:
+    """Removes disconnected websocket connections from ACTIVE_CONNECTIONS."""
+    print(f"Client {websocket_id} disconnected.")
+    ACTIVE_CONNECTIONS.remove(websocket_id)
+    print(f"Removed {websocket_id}.")
 
-    TODO:
-    - wrong key stored in ACTIVE_CONNECTIONS; new connection being made
-    """
+
+def add_new_connection(websocket_id) -> None:
+    """Adds new websocket connections to ACTIVE_CONNECTIONS."""
+    ACTIVE_CONNECTIONS.add(websocket_id)
+    print(f"Added {websocket_id}.")
+    print(f"ACTIVE_CONNECTIONS count: {len(ACTIVE_CONNECTIONS)}")
+
+
+async def connection_handler(websocket: websockets) -> websockets:
+    """Websocket connection handler."""
     try:
         async for payload in websocket:
             message = json.loads(payload.decode('utf-8'))
-            if message['websocket_id'] not in ACTIVE_CONNECTIONS:
-                ACTIVE_CONNECTIONS.add(message['websocket_id'])
-                print(f"Added {message['websocket_id']}.")
-                print(f"ACTIVE_CONNECTIONS count: {len(ACTIVE_CONNECTIONS)}")
+            websocket_id = message['websocket_id']
+
+            if websocket_id not in ACTIVE_CONNECTIONS:
+                add_new_connection(websocket_id)
             await websocket.send(f"Received: {message}")
 
     except websockets.exceptions.ConnectionClosed:
-        print(f"Client {websocket.id} disconnected.")
-        ACTIVE_CONNECTIONS.remove(message['websocket_id'])
-        print(f"Removed {websocket.id}.")
-
+        remove_inactive_connection(websocket_id)
         pass
+
     except websockets.exceptions.ConnectionClosedOK:
-        print(f"Client {websocket.id} disconnected.")
+        remove_inactive_connection(websocket_id)
         pass
 
 
