@@ -1,3 +1,4 @@
+import asyncio
 import sys
 
 import pygame
@@ -40,7 +41,7 @@ def redraw(window: pygame.Surface, game_state: str):
     pygame.display.flip()
 
 
-def main():
+async def main():
     """Runs the main game loop."""
     game_state: str = "menu"
 
@@ -64,6 +65,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
     pygame.quit()
     sys.exit()

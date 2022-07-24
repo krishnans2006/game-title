@@ -28,19 +28,28 @@ class IPPrompt(GameState):
         self.name: str = "ip"
 
         self.host_input: TextInput = TextInput(
-            80, 200, 440, 260, c.textbox_font, maxlength=15
+            80, 200, ((c.W - 160) * 2 / 3) + 80, 260, c.textbox_font, maxlength=15
         )
         self.port_input: TextInput = TextInput(
-            520, 200, 640, 260, c.textbox_font, maxlength=5
+            ((c.W - 160) * 2 / 3) + 160,
+            200,
+            c.W - 80,
+            260,
+            c.textbox_font,
+            maxlength=5,
         )
         self.current_focus: TextInput | None = None
 
-        self.submit_button: Rectangle = Rectangle(window, 260, 320, 460, 400)
+        self.submit_button: Rectangle = Rectangle(
+            window, c.W // 2 - 100, c.H - 160, c.W // 2 + 100, c.H - 80
+        )
 
         self.ip: str = ""
 
     def update(self, events: list[pygame.event.Event]) -> str | None:
         """See base class."""
+        self.host_input.update()
+        self.port_input.update()
         for event in events:
             if self.current_focus:
                 if event.type == pygame.KEYDOWN:
@@ -75,7 +84,7 @@ class IPPrompt(GameState):
 
         self.host_input.draw(self.window)
         text = c.title_font.render(":", True, (0, 0, 0))
-        self.window.blit(text, (470, 195))
+        self.window.blit(text, (((c.W - 160) * 2 / 3) + 112, 195))
         self.port_input.draw(self.window)
 
         self.submit_button.redraw()
@@ -83,11 +92,7 @@ class IPPrompt(GameState):
         self.window.blit(
             text,
             (
-                self.submit_button.x
-                + self.submit_button.width // 2
-                - text.get_width() // 2,
-                self.submit_button.y
-                + self.submit_button.height // 2
-                - text.get_height() // 2,
+                self.submit_button.x + self.submit_button.width // 2 - text.get_width() // 2,
+                self.submit_button.y + self.submit_button.height // 2 - text.get_height() // 2,
             ),
         )

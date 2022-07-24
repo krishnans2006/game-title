@@ -1,34 +1,29 @@
+import os
+import random
+
 import pygame
 
 from client import config as c
+from client.connection import Connection
 from client.state.gamestate import GameState
-from client.utility import Rectangle
+from client.utility.player import Player
 
 
 class PlayGame(GameState):
     """A game state that displays the game."""
 
-    move_rate = 5
+    move_rate = 8
 
     def __init__(self, window: pygame.Surface):
         """Initializes the PlayGame game state."""
         super().__init__(window)
         self.name: str = "game"
 
-        self.player: Rectangle = Rectangle(window, 150, 90, 210, 150, (255, 0, 0))
+        self.grass_img = pygame.image.load(os.path.join(os.getcwd()) + "/client/assets/grass.jpg")
 
-        self.quadrants: list[Rectangle] = [
-            Rectangle(window, 0, 0, c.W // 2, c.H // 2, (50, 50, 50)),  # top left
-            Rectangle(window, c.W // 2, 0, c.W, c.H // 2, (100, 100, 100)),  # top right
-            Rectangle(
-                window, 0, c.H // 2, c.W // 2, c.H, (200, 200, 200)
-            ),  # bottom left
-            Rectangle(
-                window, c.W // 2, c.H // 2, c.W, c.H, (150, 150, 150)
-            ),  # bottom right
-        ]
-        self.current_quadrant: int = 0
-        self.quadrants[self.current_quadrant].highlight()
+        self.player: Player = Player(random.randint(0, c.TW), random.randint(0, c.TH))
+
+        self.connection = Connection()
 
     def update(self, events: list[pygame.event.Event]):
         """See base class."""
@@ -41,17 +36,53 @@ class PlayGame(GameState):
             self.player.move("up", self.move_rate)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.player.move("down", self.move_rate)
-        for i, quadrant in [
-            (i, q) for i, q in enumerate(self.quadrants) if i != self.current_quadrant
-        ]:
-            if quadrant.contains(self.player):
-                self.quadrants[i].highlight()
-                self.quadrants[self.current_quadrant].unhighlight()
-                self.current_quadrant = i
-                break
 
     def redraw(self):
         """See base class."""
-        for quadrant in self.quadrants:
-            quadrant.redraw()
-        self.player.redraw()
+        start_x = -((self.player.x - c.W // 2) % c.image_width)
+        start_y = -((self.player.y - c.H // 2) % c.image_height)
+        num_x = c.W // c.image_width + 2
+        num_y = c.H // c.image_height + 2
+        for x in range(num_x):
+            for y in range(num_y):
+                self.window.blit(
+                    self.grass_img,
+                    (start_x + x * c.image_width, start_y + y * c.image_height),
+                )
+        player_to_right_edge = c.TW - self.player.x
+        player_to_bottom_edge = c.TH - self.player.y
+        if player_to_right_edge > c.TW - c.W // 2:
+            pygame.draw.rect(
+                self.window,
+                (255, 0, 0, 127),
+                (0, 0, c.W // 2 - (c.TW - player_to_right_edge), c.H),
+            )
+        if player_to_right_edge < c.W // 2:
+            pygame.draw.rect(
+                self.window,
+                (255, 0, 0, 127),
+                (
+                    c.W // 2 + player_to_right_edge,
+                    0,
+                    c.W - (c.W // 2 + player_to_right_edge),
+                    c.H,
+                ),
+            )
+        if player_to_bottom_edge > c.TH - c.H // 2:
+            pygame.draw.rect(
+                self.window,
+                (255, 0, 0, 127),
+                (0, 0, c.W, c.H // 2 - (c.TH - player_to_bottom_edge)),
+            )
+        if player_to_bottom_edge < c.H // 2:
+            pygame.draw.rect(
+                self.window,
+                (255, 0, 0, 127),
+                (
+                    0,
+                    c.H // 2 + player_to_bottom_edge,
+                    c.W,
+                    c.H - (c.H // 2 + player_to_bottom_edge),
+                ),
+            )
+        self.player.redraw(self.window)

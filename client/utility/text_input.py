@@ -15,6 +15,8 @@ class Cursor:
 
     """
 
+    change_frames = 30
+
     def __init__(self, x: int, y: int, height: int):
         """Initializes the cursor.
 
@@ -30,7 +32,6 @@ class Cursor:
         self.height: int = height
         self.show: bool = True
         self.cnt_since_change: int = 0
-        self.change_frames: int = 15
 
     def move(self, loc: int):
         """Moves the cursor's horizontal location.
@@ -60,9 +61,7 @@ class Cursor:
 
         """
         if self.show:
-            pygame.draw.line(
-                win, (0, 0, 0), (self.x, self.y), (self.x, self.y + self.height), 2
-            )
+            pygame.draw.line(win, (0, 0, 0), (self.x, self.y), (self.x, self.y + self.height), 2)
 
 
 class TextInput:

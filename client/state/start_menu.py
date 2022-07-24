@@ -26,17 +26,15 @@ class StartMenu(GameState):
         super().__init__(window)
         self.name: str = "start_menu"
 
-        self.client_button: Rectangle = Rectangle(window, 80, 320, 280, 400)
-        self.server_button: Rectangle = Rectangle(window, 440, 320, 640, 400)
-
-        self.settings_icon: pygame.Surface = pygame.image.load(
-            "client/assets/settings.png"
+        self.client_button: Rectangle = Rectangle(window, 80, c.H - 160, c.W // 2 - 80, c.H - 80)
+        self.server_button: Rectangle = Rectangle(
+            window, c.W // 2 + 80, c.H - 160, c.W - 80, c.H - 80
         )
+
+        self.settings_icon: pygame.Surface = pygame.image.load("client/assets/settings.png")
         self.settings_rect: Rectangle = Rectangle.from_rect(
             window,
-            self.settings_icon.get_rect(
-                x=c.W - self.settings_icon.get_width() - 20, y=20
-            ),
+            self.settings_icon.get_rect(x=c.W - self.settings_icon.get_width() - 20, y=20),
             color=(255, 255, 255),
         )
 
@@ -72,12 +70,8 @@ class StartMenu(GameState):
         self.window.blit(
             text,
             (
-                self.client_button.x
-                + self.client_button.width // 2
-                - text.get_width() // 2,
-                self.client_button.y
-                + self.client_button.height // 2
-                - text.get_height() // 2,
+                self.client_button.x + self.client_button.width // 2 - text.get_width() // 2,
+                self.client_button.y + self.client_button.height // 2 - text.get_height() // 2,
             ),
         )
 
@@ -86,12 +80,8 @@ class StartMenu(GameState):
         self.window.blit(
             text,
             (
-                self.server_button.x
-                + self.server_button.width // 2
-                - text.get_width() // 2,
-                self.server_button.y
-                + self.server_button.height // 2
-                - text.get_height() // 2,
+                self.server_button.x + self.server_button.width // 2 - text.get_width() // 2,
+                self.server_button.y + self.server_button.height // 2 - text.get_height() // 2,
             ),
         )
 

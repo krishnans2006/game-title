@@ -52,9 +52,25 @@ class Rectangle(pygame.Rect):
             color: The color of the rectangle.
 
         """
-        return Rectangle(
-            window, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, color
-        )
+        return Rectangle(window, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, color)
+
+    @staticmethod
+    def draw_rect_alpha(
+        surface: pygame.Surface,
+        color: tuple[int, int, int] | tuple[int, int, int, int],
+        rect: pygame.Rect | tuple[int, int, int, int],
+    ):
+        """Draws a rectangle with transparency on a surface.
+
+        Args:
+            surface: The surface to draw the rectangle on.
+            color: The color of the rectangle, optionally including an alpha value.
+            rect: The rectangle to draw.
+
+        """
+        shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
+        pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
+        surface.blit(shape_surf, rect)
 
     def highlight(self, color: tuple[int, int, int] = (0, 0, 255)):
         """Highlights the rectangle by setting its color to a different color.
@@ -97,6 +113,4 @@ class Rectangle(pygame.Rect):
 
     def redraw(self):
         """Redraws the rectangle on the window."""
-        pygame.draw.rect(
-            self.window, self.color, (self.x, self.y, self.width, self.height)
-        )
+        pygame.draw.rect(self.window, self.color, (self.x, self.y, self.width, self.height))
