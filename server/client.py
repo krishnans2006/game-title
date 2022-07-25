@@ -55,5 +55,6 @@ class WebSocketClient:
             await websocket.close()
 
 
-client = WebSocketClient()
-asyncio.run(client.establish_connection())
+if __name__ == "__main__":
+    client = WebSocketClient()
+    asyncio.run(client.establish_connection())
