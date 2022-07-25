@@ -2,9 +2,9 @@
 
 import asyncio
 import logging
+import os
 import threading
 import time
-import os
 
 from game.client import WebSocketClient
 
@@ -42,12 +42,12 @@ if __name__ == "__main__":
     #                     datefmt="%H:%M:%S")
 
     # logging.info("Main    : before creating thread")
-    
+
     # ws_srv = threading.Thread(target=run_server)
     # ws_clt = threading.Thread(target=create_client)
-    
+
     # logging.info("Main    : before running thread")
-    
+
     # ws_srv.start()
     # while not ws_srv.is_alive():
     #     time.sleep(2)
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # # threading.Condition.wait_for(ws_srv.is_alive(), timeout=20)
     # # threading.Condition.notify_all()
     # ws_clt.start()
-    
+
     # logging.info("Main    : wait for the thread to finish")
     # # x.join()
     # logging.info("Main    : all done")
