@@ -1,5 +1,9 @@
+import sys
+
 import pygame
 
+from client import game  # noqa: F401
 
-a = 'really really really really really really really really really really really really really really really really long line that should probably not be allowed by black to exist'
-# insert definitely productive work here
+game.main()
+pygame.quit()
+sys.exit()
