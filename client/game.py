@@ -41,7 +41,7 @@ def redraw(window: pygame.Surface, game_state: str):
     pygame.display.flip()
 
 
-async def main():
+def main():
     """Runs the main game loop."""
     game_state: str = "menu"
 
