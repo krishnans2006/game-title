@@ -4,9 +4,9 @@ import random
 import pygame
 
 from client import config as c
-from client.connection import Connection
 from client.state.gamestate import GameState
 from client.utility.player import Player
+from server.client import WebSocketClient
 
 
 class PlayGame(GameState):
@@ -23,10 +23,16 @@ class PlayGame(GameState):
 
         self.player: Player = Player(random.randint(0, c.TW), random.randint(0, c.TH))
 
-        self.connection = Connection()
+        # TODO: allow port to be edited in UI
+        self.websocket_client = WebSocketClient(port=8765)
 
     def update(self, events: list[pygame.event.Event]):
         """See base class."""
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.websocket_client.cleanup()
+                return
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.player.move("left", self.move_rate)
@@ -36,6 +42,10 @@ class PlayGame(GameState):
             self.player.move("up", self.move_rate)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             self.player.move("down", self.move_rate)
+
+        if self.frame_counter == self.correct_frame:
+            self.frame_counter = 0
+            self.websocket_client.create_message((self.player.to_dict()))
 
     def redraw(self):
         """See base class."""

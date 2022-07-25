@@ -133,8 +133,10 @@ class Player(object):
     def to_dict(self):
         """Returns a dictionary representation of the player for easy transmission."""
         return {
+            "true_ping": self.is_ping_frame(),
             "x": self.x,
             "y": self.y,
             "health": self.health,
             "ping": self.ping,
+            "bullets": [(b.x, b.y, b.type, b.x_dir, b.y_dir) for b in self.bullets],
         }
