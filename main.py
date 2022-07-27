@@ -2,24 +2,15 @@
 
 import asyncio
 import logging
-import os
+import sys
 import threading
 import time
 
-from game.client import WebSocketClient
+import pygame
 
-
-def run_server():
-    """Run the websocket server script."""
-    try:
-        cwd = [os.getcwd().split('/')]
-
-        if cwd == 'plucky-pooka-cj22':
-            os.system('python ./game/server.py')
-        elif cwd == 'bug':
-            os.system('python ~/plucky-pooka-cj22/game/server.py')
-    except Exception:
-        print(f"Please run inside project directory. Current directory: {cwd}.")
+from client import game  # noqa: F401
+from client.client import WebSocketClient  # ugly import statement
+from server import server
 
 
 def create_client():
@@ -28,35 +19,28 @@ def create_client():
     asyncio.run(ws_client.establish_connection())
 
 
+def run_game():
+    """Runs the game instance."""
+    game.main()
+    pygame.quit()
+    sys.exit()
+
+
 if __name__ == "__main__":
-    cwd = [os.getcwd().split('/')]
 
-    if cwd == 'plucky-pooka-cj22':
-        os.chdir('../game')
+    format = "%(asctime)s: %(message)s"
 
-    print(cwd[-1])
-    print(os.getcwd())
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+    logging.info("Main    : before creating thread")
+    logging.info("Main    : before running thread")
+    server_thread = threading.Thread(
+        target=asyncio.run, args=(server.main(),)
+    )  # process is blocking next thread.
+    server_thread.start()
+    time.sleep(2)
+    client_thread = threading.Thread(target=create_client())
+    client_thread.start()
 
-    # format = "%(asctime)s: %(message)s"
-    # logging.basicConfig(format=format, level=logging.INFO,
-    #                     datefmt="%H:%M:%S")
-
-    # logging.info("Main    : before creating thread")
-
-    # ws_srv = threading.Thread(target=run_server)
-    # ws_clt = threading.Thread(target=create_client)
-
-    # logging.info("Main    : before running thread")
-
-    # ws_srv.start()
-    # while not ws_srv.is_alive():
-    #     time.sleep(2)
-
-    # # print(dir(ws_srv))
-    # # threading.Condition.wait_for(ws_srv.is_alive(), timeout=20)
-    # # threading.Condition.notify_all()
-    # ws_clt.start()
-
-    # logging.info("Main    : wait for the thread to finish")
-    # # x.join()
-    # logging.info("Main    : all done")
+    logging.info("Main    : wait for the thread to finish")
+    # x.join()
+    logging.info("Main    : all done")

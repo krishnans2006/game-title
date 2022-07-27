@@ -8,7 +8,7 @@ from typing import Dict
 import websockets
 
 
-class WebSocketClient():
+class WebSocketClient:
     """Websocket client."""
 
     def __init__(self) -> None:
@@ -19,15 +19,14 @@ class WebSocketClient():
         self.delay = 1
 
     def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str) -> Dict:
-        """Construct payload."""
-        payload = {
-            "websocket_id": WEBSOCKET_ID,
-            "start_game": True,
-            "stop_game": False,
-            "msg": MESSAGE
-        }
+        """
+        Construct payload that can be sent through the websocket connection.
 
-        return json.dumps(payload).encode('utf-8')
+        See utility.player.to_dict() for implementation.
+        """
+        payload = {}
+
+        return json.dumps(payload).encode("utf-8")
 
     def create_message(self) -> str:
         """Create a message to be included in payload."""
@@ -41,20 +40,27 @@ class WebSocketClient():
                 print(f"Client {websocket.id} connected.")
 
                 while True:
-                    await websocket.send(self.create_payload(
-                        WEBSOCKET_ID,
-                        MESSAGE=self.create_message()
-                    ))
+                    await websocket.send(
+                        self.create_payload(WEBSOCKET_ID, MESSAGE=self.create_message())
+                    )
                     await asyncio.sleep(self.delay)
-                    _ = await websocket.recv()
-                    print(_)
+                    server_response: str = await websocket.recv()
+                    print(f"Server response: {server_response}")
 
         except websockets.exceptions.ConnectionClosedError as e:
             print(f"Error: {e}.")
 
         finally:
-            await websocket.close()
+            # await websocket.close()
+            pass
 
 
-client = WebSocketClient()
-asyncio.run(client.establish_connection())
+async def run():
+    """Creates an instance of WebSocketClient() and runs it."""
+    client = WebSocketClient()
+    asyncio.run(client.establish_connection())
+
+
+if __name__ == "__main__":
+    client = WebSocketClient()
+    asyncio.run(client.establish_connection())

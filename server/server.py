@@ -48,7 +48,13 @@ def count_active_connections() -> None:
 
 def decode_json_payload(payload) -> json:
     """Decode incoming message."""
-    return json.loads(payload.decode('utf-8'))
+    payload_json = json.loads(payload.decode("utf-8"))
+    return payload_json
+
+
+def get_message():
+    """Get message."""
+    pass
 
 
 async def connection_handler(websocket: websockets) -> websockets:
@@ -67,9 +73,10 @@ async def connection_handler(websocket: websockets) -> websockets:
             if websocket not in ACTIVE_CONNECTIONS:
                 store_new_connection(websocket)
 
-            await asyncio.sleep(.5)
+            await asyncio.sleep(0.5)
             if websocket.open:
-                await websocket.send("message['msg']")
+                message = decode_json_payload(_)
+                await websocket.send(str(message))
             else:
                 await websocket.close()
                 remove_inactive_connection(websocket)
@@ -103,15 +110,12 @@ async def connection_handler(websocket: websockets) -> websockets:
 async def main():
     """Initialize websocket server."""
     async with websockets.serve(
-        connection_handler,
-        "127.0.0.1",
-        8765,
-        ping_timeout=5,
-        ping_interval=5
+        connection_handler, "127.0.0.1", 8765, ping_timeout=5, ping_interval=5
     ):
         print("Websocket server running.")
         count_active_connections()
         await asyncio.Future()  # run forever
+
 
 if __name__ == "__main__":
     asyncio.run(main())
