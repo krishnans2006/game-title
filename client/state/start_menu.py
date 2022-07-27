@@ -1,10 +1,12 @@
 import pygame
 
 from client import config as c
+from client.state.fade_in import fade_in
 from client.state.gamestate import GameState
 from client.utility import Rectangle
 
 
+@fade_in(45, from_color=(7, 23, 24))
 class StartMenu(GameState):
     """A game state displaying the start menu, with options to start a client or server.
 

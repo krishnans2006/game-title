@@ -12,6 +12,10 @@ connection: Connection = Connection()
 pygame.init()
 
 win: pygame.Surface = pygame.display.set_mode((c.W, c.H))
+
+# converts surface from RGB to RGBA -- allows for transparency, fade in/out, etc.
+win.convert_alpha()
+
 pygame.display.set_caption("The Game :D")
 pygame.key.set_repeat(500, 50)
 
