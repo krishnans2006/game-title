@@ -7,6 +7,8 @@ from typing import Dict
 
 import websockets
 
+from client.utility import player
+
 
 class WebSocketClient:
     """Websocket client."""
@@ -18,18 +20,32 @@ class WebSocketClient:
         self.uri = f"{self.ws_url}{self.ws_port}"
         self.delay = 1
 
-    def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str) -> Dict:
+        # self.player = PlayGame
+        self.player_data = player.Player.to_dict()  # Highly dependent on playgame.py
+
+    def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str, player_data: dict) -> Dict:
         """
         Construct payload that can be sent through the websocket connection.
 
-        See utility.player.to_dict() for implementation.
+        Should ideally be initialized attributes of client.utility.Player class, but can be
+        any data that can be handled by websocket.
+
+        See utility.player.to_dict().
+
+        Attributes:
+
         """
-        payload = {}
+        print(player_data)
+        payload = {
+            "websocket_id": WEBSOCKET_ID,
+            "message": MESSAGE,
+            "data": {player_data},  # Insert player data
+        }
 
         return json.dumps(payload).encode("utf-8")
 
     def create_message(self) -> str:
-        """Create a message to be included in payload."""
+        """Helper function to create a message to be included in payload for testing."""
         return random.randint(1, 5)
 
     async def establish_connection(self) -> None:
