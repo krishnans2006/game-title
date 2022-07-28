@@ -5,11 +5,17 @@ import pygame
 from client.state.gamestate import GameState
 
 
-def fade_in(duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
-    """Decorator to make screen fade into game state from a colored screen.
+def __fade(out: bool, duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
+    # alpha levels increase when fading out, decrease when fading in
+    if out:
+        # TODO: think of fade out implementation
+        pass
+        # def get_current_alpha(framectr, maxframes) -> float:
+        #     return round(255 * (framectr / maxframes))
+    else:
 
-    Decorates any subclass of `GameState`.
-    """
+        def get_current_alpha(framectr, maxframes) -> float:
+            return round(255 - 255 * (framectr / maxframes))
 
     def decorator(cls: Type[GameState]):
         class FadeInWrapper(cls):
@@ -34,7 +40,7 @@ def fade_in(duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
                     return
 
                 # fill amount ranges from 0-1
-                alpha: float = round(255 - 255 * (self.__frame_ctr / duration_frames))
+                alpha: float = get_current_alpha(self.__frame_ctr, duration_frames)
                 # print(f"α: {alpha}")
 
                 if alpha > 0:
@@ -49,3 +55,16 @@ def fade_in(duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
         return FadeInWrapper
 
     return decorator
+
+
+def fade_in(duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
+    """Decorator to make screen fade into game state from a colored screen.
+
+    Decorates any subclass of `GameState`.
+    """
+    return __fade(False, duration_frames, from_color)
+
+
+# TODO
+# def fade_out(duration_frames: int, from_color: Tuple[int, int, int] = (0, 0, 0)):
+#     return __fade(True, duration_frames, from_color)

@@ -1,7 +1,7 @@
 import pygame
 
 from client import config as c
-from client.state.fade_in import fade_in
+from client.state.fade import fade_in
 from client.state.gamestate import GameState
 from client.utility import Rectangle
 
