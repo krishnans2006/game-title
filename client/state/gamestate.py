@@ -2,6 +2,8 @@ from abc import ABCMeta, abstractmethod
 
 import pygame
 
+from client.client_handler import ClientHandler
+
 
 class GameState:
     """Superclass for all game states.
@@ -25,10 +27,13 @@ class GameState:
         self.name: str = ""
 
     @abstractmethod
-    def update(self, events: list[pygame.event.Event]) -> str | None:
+    async def update(
+        self, events: list[pygame.event.Event], websocket: ClientHandler
+    ) -> str | None:
         """Updates the game state
 
         Args:
+            websocket: A Websocket Handler client to use for client server communication.
             events: A list of events from `pygame.event.get()`, used to handle input.
 
         Returns:

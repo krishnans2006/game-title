@@ -1,10 +1,12 @@
+import asyncio
 import os
 import random
+from threading import Thread
 
 import pygame
 
 from client import config as c
-from client.connection import Connection
+from client.client_handler import ClientHandler
 from client.state.gamestate import GameState
 from client.utility.player import Player
 
@@ -21,12 +23,36 @@ class PlayGame(GameState):
 
         self.grass_img = pygame.image.load(os.path.join(os.getcwd()) + "/client/assets/grass.jpg")
 
-        self.player: Player = Player(random.randint(0, c.TW), random.randint(0, c.TH))
+        self.player: Player = Player(random.randint(30, c.TW - 30), random.randint(30, c.TH - 30))
 
-        self.connection = Connection()
+        self.websocket: ClientHandler | None = None
 
-    def update(self, events: list[pygame.event.Event]):
+        self.update_thread = Thread(
+            target=asyncio.get_event_loop().run_until_complete,
+            args=(self.update_client(),),
+        )
+        self.update_thread.start()
+
+    async def update_client(self):
+        """Thread that repeatedly updates the websocket connection.
+
+        Sends the current player position to the server, and retrieves the current positions of all
+        other players.
+
+        """
+        while True:
+            await asyncio.sleep(0.5)
+            if self.websocket:
+                await self.websocket.update()
+            else:
+                print("No websocket connection")
+
+    async def update(self, events: list[pygame.event.Event], websocket: ClientHandler):
         """See base class."""
+        if not self.websocket:
+            await websocket.connect()
+            websocket.attach_player(self.player)
+            self.websocket = websocket
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.player.move("left", self.move_rate)
@@ -86,3 +112,7 @@ class PlayGame(GameState):
                 ),
             )
         self.player.redraw(self.window)
+
+    def cleanup(self):
+        """Cleans up the websocket connection for the game."""
+        self.websocket.close()

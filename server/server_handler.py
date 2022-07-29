@@ -1,11 +1,15 @@
 """Websocket server script."""
 
 import asyncio
+import base64
 import json
 
 import websockets
+from data_handler import DataHandler
 
-ACTIVE_CONNECTIONS = set()
+ACTIVE_CONNECTIONS: set = set()
+
+data_handler: DataHandler = DataHandler()
 
 
 def store_new_connection(websocket: websockets) -> None:
@@ -19,8 +23,9 @@ def store_new_connection(websocket: websockets) -> None:
 def remove_inactive_connection(websocket: websockets) -> None:
     """Remove disconnected websocket connections from ACTIVE_CONNECTIONS."""
     if websocket.closed:
-        print(f"Client {websocket.id} disconnected.")
+        print(f"ClientHandler {websocket.id} disconnected.")
         ACTIVE_CONNECTIONS.remove(websocket)
+        data_handler.remove_player(websocket.id.int)
         count_active_connections()
 
 
@@ -46,10 +51,24 @@ def count_active_connections() -> None:
         print("No active connections.")
 
 
-def decode_json_payload(payload) -> json:
-    """Decode incoming message."""
-    payload_json = json.loads(payload.decode("utf-8"))
-    return payload_json
+def decode(response: bytes) -> dict:
+    """Decode a websocket response into a dictionary.
+
+    Args:
+        response: The base64-encoded response from the client.
+
+    """
+    return json.loads(base64.b64decode(response).decode())
+
+
+def encode(dict_obj: dict) -> bytes:
+    """Encode a dictionary into a websocket response.
+
+    Args:
+        dict_obj: The dictionary to encode as a base64-encoded response.
+
+    """
+    return base64.b64encode(json.dumps(dict_obj).encode())
 
 
 def get_message():
@@ -57,7 +76,9 @@ def get_message():
     pass
 
 
-async def connection_handler(websocket: websockets) -> websockets:
+async def connection_handler(
+    conn: websockets.WebSocketServerProtocol,
+) -> websockets.WebSocketServerProtocol:
     """
     Websocket connection handler.
 
@@ -68,31 +89,33 @@ async def connection_handler(websocket: websockets) -> websockets:
         "msg"
     """
     try:
-        async for _ in websocket:
+        async for recv in conn:
 
-            if websocket not in ACTIVE_CONNECTIONS:
-                store_new_connection(websocket)
+            if conn not in ACTIVE_CONNECTIONS:
+                store_new_connection(conn)
 
             await asyncio.sleep(0.5)
-            if websocket.open:
-                message = decode_json_payload(_)
-                await websocket.send(str(message))
+            if conn.open:
+                message: dict = decode(recv)
+                data_handler.update_player(conn.id.int, message)
+                payload: dict = data_handler.get_all_players_but_self(conn.id.int)
+                await conn.send(encode(payload))
             else:
-                await websocket.close()
-                remove_inactive_connection(websocket)
+                await conn.close()
+                remove_inactive_connection(conn)
 
-    except websockets.exceptions.ConnectionClosed:
-        remove_inactive_connection(websocket)
+    except websockets.ConnectionClosed:
+        remove_inactive_connection(conn)
         print("ConnectionClosed.")
         pass
 
-    except websockets.exceptions.ConnectionClosedOK:
-        remove_inactive_connection(websocket)
+    except websockets.ConnectionClosedOK:
+        remove_inactive_connection(conn)
         print("ConnectionClosedOK.")
         pass
 
-    except websockets.exceptions.ConnectionClosedError:
-        remove_inactive_connection(websocket)
+    except websockets.ConnectionClosedError:
+        remove_inactive_connection(conn)
         print("ConnectionClosedError")
         pass
 
@@ -119,3 +142,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    asyncio.get_event_loop().run_forever()

@@ -38,7 +38,7 @@ class StartMenu(GameState):
             color=(255, 255, 255),
         )
 
-    def update(self, events: list[pygame.event.Event]) -> str | None:
+    async def update(self, events: list[pygame.event.Event], _) -> str | None:
         """See base class."""
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:

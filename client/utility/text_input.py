@@ -117,6 +117,7 @@ class TextInput:
         y2: int,
         font: pygame.font.Font,
         maxlength: int = None,
+        text: str = "",
     ):
         """Initializes the textbox.
 
@@ -137,7 +138,7 @@ class TextInput:
         self.is_focused: bool = False
         self.font: pygame.font.Font = font
         self.maxlength: int = maxlength
-        self.text: str = ""
+        self.text: str = text
         self.disp_text: str = self.text
         self.text_render: pygame.Surface = font.render(self.disp_text, True, (0, 0, 0))
         self.cursor: Cursor = Cursor(self.x + 5, self.y + 5, self.height - 10)

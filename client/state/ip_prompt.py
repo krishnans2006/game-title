@@ -1,6 +1,7 @@
 import pygame
 
 from client import config as c
+from client.client_handler import ClientHandler
 from client.state.gamestate import GameState
 from client.utility import Rectangle, TextInput
 
@@ -28,7 +29,13 @@ class IPPrompt(GameState):
         self.name: str = "ip"
 
         self.host_input: TextInput = TextInput(
-            80, 200, ((c.W - 160) * 2 / 3) + 80, 260, c.textbox_font, maxlength=15
+            80,
+            200,
+            ((c.W - 160) * 2 / 3) + 80,
+            260,
+            c.textbox_font,
+            maxlength=15,
+            text="127.0.0.1",
         )
         self.port_input: TextInput = TextInput(
             ((c.W - 160) * 2 / 3) + 160,
@@ -37,6 +44,7 @@ class IPPrompt(GameState):
             260,
             c.textbox_font,
             maxlength=5,
+            text="8765",
         )
         self.current_focus: TextInput | None = None
 
@@ -46,7 +54,9 @@ class IPPrompt(GameState):
 
         self.ip: str = ""
 
-    def update(self, events: list[pygame.event.Event]) -> str | None:
+    async def update(
+        self, events: list[pygame.event.Event], websocket: ClientHandler
+    ) -> str | None:
         """See base class."""
         self.host_input.update()
         self.port_input.update()
@@ -60,8 +70,8 @@ class IPPrompt(GameState):
                 ):
                     self.current_focus.shift_unpressed()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.submit_button.collidepoint(event.pos):
-                    self.ip += self.host_input.text + ":" + self.port_input.text
+                if self.submit_button.collidepoint(event.pos) and self.port_input.text.isnumeric():
+                    websocket.setup(self.host_input.text, int(self.port_input.text))
                     return "game"
                 if self.host_input.rect.collidepoint(event.pos):
                     self.current_focus = self.host_input

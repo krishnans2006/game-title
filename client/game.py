@@ -1,13 +1,14 @@
 import asyncio
 import sys
 
+import nest_asyncio
 import pygame
 
 from client import config as c
-from client.connection import Connection
+from client.client_handler import ClientHandler
 from client.state import IPPrompt, PlayGame, StartMenu
 
-connection: Connection = Connection()
+nest_asyncio.apply()
 
 pygame.init()
 
@@ -44,6 +45,7 @@ def redraw(window: pygame.Surface, game_state: str):
 async def main():
     """Runs the main game loop."""
     game_state: str = "menu"
+    websocket = ClientHandler()
 
     game_running = True
     while game_running:
@@ -52,7 +54,7 @@ async def main():
             if event.type == pygame.QUIT:
                 game_running = False
 
-        if run_result := state_map[game_state].update(events):
+        if run_result := await state_map[game_state].update(events, websocket):
             if run_result == "server":
                 # Start server as subprocess
                 print("Started server")
@@ -61,10 +63,11 @@ async def main():
                 game_state = run_result  # Change game state
             print(game_state)
         redraw(win, game_state)
-        clock.tick(60)
+        await asyncio.sleep(1 / 60)
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+    state_map["game"].cleanup()
     pygame.quit()
     sys.exit()

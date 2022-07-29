@@ -12,6 +12,7 @@ pygame = "*"
 websockets = "*"
 black = "*"
 pygame-gui = "*"
+nest-asyncio = "*"
 
 [dev-packages]
 # Base tools
@@ -20,6 +21,10 @@ isort = "~=5.10.1"
 pre-commit = "~=2.17.0"
 # Flake8 plugins, see https://github.com/python-discord/code-jam-template/tree/main#plugin-list
 flake8-docstrings = "~=1.6.0"
+black = "*"
 
 [requires]
 python_version = "3.10"
+
+[pipenv]
+allow_prereleases = true
