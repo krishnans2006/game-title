@@ -30,6 +30,15 @@ class PlayGame(GameState):
         self.update_thread: Thread = None
         self.thread_cancelled = False
 
+    # TODO:
+    def client_payload_dict(self) -> dict:
+        """Returns a dict to be passed into the server and received by other players.
+
+        TODO: should send player position (done), orientation, weapon type, events such as
+        bullet creation, weapon switching, changes in health, changes
+        """
+        return self.player.to_dict()
+
     async def update_client(self):
         """Thread that repeatedly updates the websocket connection.
 
@@ -42,7 +51,7 @@ class PlayGame(GameState):
             if self.thread_cancelled:
                 break
             if self.websocket:
-                await self.websocket.update()
+                await self.websocket.update(self.client_payload_dict())
             else:
                 print("No websocket connection")
 
@@ -61,7 +70,6 @@ class PlayGame(GameState):
             )
             self.update_thread.start()
             await websocket.connect()
-            websocket.attach_player(self.player)
             self.websocket = websocket
 
         for event in events:
