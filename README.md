@@ -32,7 +32,7 @@ Active connections: 1
 
 3. Run the following to start the server: ```python ./server/server_handler.py```.
 
-4. Once the server starts, run the following to start a client: ```python ./client/client_handler.py```.
+4. Once the server starts, run the following to start a client: ```python main.py```.
 
 5. You will be presented with an option to change the ip address of the server. This defaults to `port 8765` on `127.0.0.1` / `localhost`
 
