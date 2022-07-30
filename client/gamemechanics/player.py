@@ -1,10 +1,12 @@
 import pygame
 
 from client import config as c
+from client.gamemechanics.collidable import Collidable
+from client.gamemechanics.gameobject import GameObject
 from client.utility import Rectangle
 
 
-class Player(object):
+class Player(GameObject, Collidable):
     """Handles a Player in the game.
 
     Attributes:
@@ -18,7 +20,7 @@ class Player(object):
 
     """
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, name: str = "Player1"):
         """Initializes the player.
 
         Args:
@@ -30,6 +32,8 @@ class Player(object):
         self.y: int = y
         self.width: int = 60
         self.height: int = 60
+        self.hitbox_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.name: str = name
 
         self.health: int = 100
         self.gun: None = None
@@ -138,3 +142,11 @@ class Player(object):
             "health": self.health,
             "ping": self.ping,
         }
+
+    def collidepoint(self, x: int, y: int) -> bool:
+        """See superclass."""
+        return self.hitbox_rect.collidepoint(x, y)
+
+    def colliderect(self, rect: pygame.Rect) -> bool:
+        """See superclass."""
+        return self.hitbox_rect.colliderect(rect)

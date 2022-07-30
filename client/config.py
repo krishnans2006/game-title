@@ -8,7 +8,8 @@ H = 720
 TW = 6120
 TH = 6120
 
-image_width = image_height = 612
+# I think this refers to the grass image
+grass_image_width = grass_image_height = 612
 
 title_font = pygame.font.SysFont("timesnewroman", 50)
 button_font = pygame.font.SysFont("timesnewroman", 25)

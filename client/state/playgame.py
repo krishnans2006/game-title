@@ -7,8 +7,9 @@ import pygame
 
 from client import config as c
 from client.client_handler import ClientHandler
+from client.gamemechanics.player import Player
+from client.gamemechanics.world import World
 from client.state.gamestate import GameState
-from client.utility.player import Player
 
 
 class PlayGame(GameState):
@@ -24,6 +25,7 @@ class PlayGame(GameState):
         self.grass_img = pygame.image.load(os.path.join(os.getcwd()) + "/client/assets/grass.jpg")
 
         self.player: Player = Player(random.randint(30, c.TW - 30), random.randint(30, c.TH - 30))
+        self.world: World = World()
 
         self.websocket: ClientHandler | None = None
 
@@ -77,6 +79,10 @@ class PlayGame(GameState):
                 print("quit")
                 await self.cleanup()
 
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     # TODO: check whether click is left or right
+            #     self.world.spawn_object(Bullet)
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.player.move("left", self.move_rate)
@@ -89,15 +95,18 @@ class PlayGame(GameState):
 
     def redraw(self):
         """See base class."""
-        start_x = -((self.player.x - c.W // 2) % c.image_width)
-        start_y = -((self.player.y - c.H // 2) % c.image_height)
-        num_x = c.W // c.image_width + 2
-        num_y = c.H // c.image_height + 2
+        start_x = -((self.player.x - c.W // 2) % c.grass_image_width)
+        start_y = -((self.player.y - c.H // 2) % c.grass_image_height)
+        num_x = c.W // c.grass_image_width + 2
+        num_y = c.H // c.grass_image_height + 2
+
+        # draw all grass background tiles spaced out c.image_width and c.image_height apart
         for x in range(num_x):
+            # and y on screen
             for y in range(num_y):
                 self.window.blit(
                     self.grass_img,
-                    (start_x + x * c.image_width, start_y + y * c.image_height),
+                    (start_x + x * c.grass_image_width, start_y + y * c.grass_image_height),
                 )
         player_to_right_edge = c.TW - self.player.x
         player_to_bottom_edge = c.TH - self.player.y
