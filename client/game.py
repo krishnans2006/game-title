@@ -59,7 +59,7 @@ async def main():
                 game_state = "game"
             else:
                 game_state = run_result  # Change game state
-            print(game_state)
+            print(f"game_state: {game_state}")
         redraw(win, game_state)
         clock.tick(60)
 

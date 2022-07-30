@@ -21,7 +21,7 @@ class WebSocketClient:
         self.delay = 1
 
         # self.player = PlayGame
-        self.player_data = player.Player.to_dict()  # Highly dependent on playgame.py
+        self.player_data = player.Player.to_dict(self)  # Highly dependent on playgame.py
 
     def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str, player_data: dict) -> Dict:
         """
