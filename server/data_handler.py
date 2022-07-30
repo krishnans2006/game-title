@@ -25,7 +25,6 @@ class DataHandler:
 
         """
         self.players[player_id] = player_data
-        print(self.players)
 
     def get_player(self, player_id: int):
         """Returns the player data for the given player id.
