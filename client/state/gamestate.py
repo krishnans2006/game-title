@@ -1,11 +1,11 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 import pygame
 
 from client.client_handler import ClientHandler
 
 
-class GameState:
+class GameState(ABC):
     """Superclass for all game states.
 
     Attributes:
@@ -13,8 +13,6 @@ class GameState:
         name: The name of the game state.
 
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, window: pygame.Surface):
         """Initializes the game state.
