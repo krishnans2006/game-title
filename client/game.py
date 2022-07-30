@@ -63,7 +63,8 @@ async def main():
                 game_state = run_result  # Change game state
             print(game_state)
         redraw(win, game_state)
-        await asyncio.sleep(1 / 60)
+        await asyncio.sleep(0)
+        clock.tick(60)
 
 
 if __name__ == "__main__":

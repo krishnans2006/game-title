@@ -53,6 +53,7 @@ class PlayGame(GameState):
             await websocket.connect()
             websocket.attach_player(self.player)
             self.websocket = websocket
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.player.move("left", self.move_rate)
