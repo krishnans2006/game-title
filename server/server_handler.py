@@ -93,7 +93,6 @@ async def connection_handler(
 
             if conn not in ACTIVE_CONNECTIONS:
                 store_new_connection(conn)
-
             await asyncio.sleep(0.5)
             if conn.open:
                 message: dict = decode(recv)
