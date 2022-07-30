@@ -20,6 +20,15 @@ class WebSocketClient:
         self.uri = f"{self.ws_url}{self.ws_port}"
         self.delay = 1
 
+        # give WebSocketClient x
+        self.x = "x"
+        self.y = "y"
+        self.width = "width"
+        self.height = "height"
+        self.health = "health"
+        self.gun = "gun"
+        self.ping = "ping"
+
         # self.player = PlayGame
         self.player_data = player.Player.to_dict(self)  # Highly dependent on playgame.py
 
@@ -39,7 +48,7 @@ class WebSocketClient:
         payload = {
             "websocket_id": WEBSOCKET_ID,
             "message": MESSAGE,
-            "data": {player_data},  # Insert player data
+            "data": player_data,
         }
 
         return json.dumps(payload).encode("utf-8")
@@ -57,7 +66,11 @@ class WebSocketClient:
 
                 while True:
                     await websocket.send(
-                        self.create_payload(WEBSOCKET_ID, MESSAGE=self.create_message())
+                        self.create_payload(
+                            WEBSOCKET_ID,
+                            MESSAGE=self.create_message(),
+                            player_data=self.player_data,
+                        )
                     )
                     await asyncio.sleep(self.delay)
                     server_response: str = await websocket.recv()
@@ -74,7 +87,8 @@ class WebSocketClient:
 async def run():
     """Creates an instance of WebSocketClient() and runs it."""
     client = WebSocketClient()
-    asyncio.run(client.establish_connection())
+    # asyncio.run(client.establish_connection())
+    await client.establish_connection()
 
 
 if __name__ == "__main__":
