@@ -27,11 +27,8 @@ class PlayGame(GameState):
 
         self.websocket: ClientHandler | None = None
 
-        self.update_thread = Thread(
-            target=asyncio.get_event_loop().run_until_complete,
-            args=(self.update_client(),),
-        )
-        self.update_thread.start()
+        self.update_thread: Thread = None
+        self.thread_cancelled = False
 
     async def update_client(self):
         """Thread that repeatedly updates the websocket connection.
@@ -42,17 +39,35 @@ class PlayGame(GameState):
         """
         while True:
             await asyncio.sleep(0.5)
+            if self.thread_cancelled:
+                break
             if self.websocket:
                 await self.websocket.update()
             else:
                 print("No websocket connection")
 
+        print("\nClient thread cleaning up!\n")
+
+    def stop_thread(self):
+        """Stops `update_client` thread. Can be safely called multiple times."""
+        self.thread_cancelled = True
+
     async def update(self, events: list[pygame.event.Event], websocket: ClientHandler):
         """See base class."""
         if not self.websocket:
+            self.update_thread = Thread(
+                target=asyncio.get_event_loop().run_until_complete,
+                args=(self.update_client(),),
+            )
+            self.update_thread.start()
             await websocket.connect()
             websocket.attach_player(self.player)
             self.websocket = websocket
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                print("quit")
+                await self.cleanup()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
@@ -114,6 +129,8 @@ class PlayGame(GameState):
             )
         self.player.redraw(self.window)
 
-    def cleanup(self):
+    async def cleanup(self):
         """Cleans up the websocket connection for the game."""
-        self.websocket.close()
+        self.stop_thread()
+        if self.websocket:
+            await self.websocket.close()

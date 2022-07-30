@@ -1,5 +1,4 @@
 import asyncio
-import sys
 
 import nest_asyncio
 import pygame
@@ -65,10 +64,3 @@ async def main():
         redraw(win, game_state)
         await asyncio.sleep(0)
         clock.tick(60)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-    state_map["game"].cleanup()
-    pygame.quit()
-    sys.exit()
