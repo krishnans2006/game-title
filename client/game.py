@@ -10,7 +10,7 @@ from client import client_connector
 from client import config as c
 from client.client_handler import ClientHandler
 from client.state import IPPrompt, PlayGame, StartMenu
-from server import server_connector
+from server import server_handler
 
 # connection: Connection = Connection()
 # connection = server_connector.main()
@@ -79,9 +79,7 @@ async def main():
                 # sets game_state. game_state needs to be game.
                 game_state = "game"
 
-                server_thread = threading.Thread(
-                    target=asyncio.run, args=(server_connector.main(),)
-                )
+                server_thread = threading.Thread(target=asyncio.run, args=(server_handler.main(),))
                 logging.info("Main    : before running server_thread")
                 server_thread.start()
                 logging.info("Main    : server_thread running.")

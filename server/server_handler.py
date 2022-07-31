@@ -5,7 +5,8 @@ import base64
 import json
 
 import websockets
-from data_handler import DataHandler
+
+from server.data_handler import DataHandler
 
 ACTIVE_CONNECTIONS: set = set()
 

@@ -31,17 +31,17 @@ class ClientHandler:
 
     def __init__(self) -> None:
         """Initializes the class with url variables."""
-        self.ws_url: str = "127.0.0.1"
+        self.ws_ip: str = "127.0.0.1"
         self.ws_port: int = 8765
-        self.uri = f"{self.ws_url}:{self.ws_port}"
+        self.uri = f"ws://{self.ws_ip}:{self.ws_port}"
 
         self.connection = self.connection_thread = None
 
-    def setup(self, url: str = "127.0.0.1", port: int = 8765) -> None:
+    def setup(self, ip: str = "127.0.0.1", port: int = 8765) -> None:
         """Sets up the class with url variables."""
-        self.ws_url = url
+        self.ws_ip = ip
         self.ws_port = port
-        self.uri = f"ws://{self.ws_url}:{self.ws_port}"
+        self.uri = f"ws://{self.ws_ip}:{self.ws_port}"
 
     async def connect(self):
         """Initiates the connection to the server."""
