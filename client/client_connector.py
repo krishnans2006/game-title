@@ -7,8 +7,6 @@ from typing import Dict
 
 import websockets
 
-# from client.utility import player
-
 
 class WebSocketClient:
     """Websocket client."""
@@ -19,24 +17,9 @@ class WebSocketClient:
         self.ws_port: int = 8765
         self.uri = f"{self.ws_url}{self.ws_port}"
         self.delay = 1
+        self.player_data = None  # Should be output from player.Player.to_dict()
 
-        # give WebSocketClient x
-        self.x = ""
-        self.y = ""
-        self.width = ""
-        self.height = ""
-        self.health = ""
-        self.gun = ""
-        self.ping = ""
-
-        #  give attribute player
-        # self.player = playgame.PlayGame.to_dict()
-
-        # self.player = PlayGame
-        # self.player_data = player.Player.to_dict(self)  # Highly dependent on playgame.py
-        # self.player_data =  "fake data" #playgame.PlayGame.update()  # Highly dependent on playgame.py
-
-    def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str) -> Dict:
+    def create_payload(self, WEBSOCKET_ID: str, MESSAGE: str, player_data: dict) -> Dict:
         """
         Construct payload that can be sent through the websocket connection.
 
@@ -51,7 +34,7 @@ class WebSocketClient:
         payload = {
             "websocket_id": WEBSOCKET_ID,
             "message": MESSAGE,
-            "data": None,
+            "data": player_data,
         }
 
         return json.dumps(payload).encode("utf-8")
@@ -72,6 +55,7 @@ class WebSocketClient:
                         self.create_payload(
                             WEBSOCKET_ID,
                             MESSAGE=self.create_message(),
+                            player_data=self.player_data,
                         )
                     )
                     await asyncio.sleep(self.delay)
@@ -82,18 +66,12 @@ class WebSocketClient:
             print(f"Error: {e}.")
 
         finally:
-            # await websocket.close()
             pass
 
 
 async def run():
     """Creates an instance of WebSocketClient() and runs it."""
     client = WebSocketClient()
-
-    # asyncio.run(client.establish_connection())
-    # print(dir(client))
-    # print(f"client.to_dict(): {client.to_dict()}")
-
     await client.establish_connection()
 
 
