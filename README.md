@@ -1,7 +1,7 @@
 # Welcome to <span style=color:#ca03fc>Plucky Pooka's</span> 2022 Python Discord Code Jam Repository
 
 ## About
-**`<Game Title>`** is a 2D directional game written in Python. It uses [websockets.io](https://websockets.readthedocs.io/en/stable/) to allow for multiple client connections and [asyncio](https://docs.python.org/3/library/asyncio.html) to handle concurrent functionality.
+**`Flamin' Sockets`** is a 2D directional game written in Python. It uses [websockets.io](https://websockets.readthedocs.io/en/stable/) to allow for multiple client connections and [asyncio](https://docs.python.org/3/library/asyncio.html) to handle concurrent functionality.
 
 ![](./client/assets/Screenshot_Game_Menu.png)
 
@@ -9,15 +9,26 @@ The game showcases the use of websockets to transmit information back and forth 
 
 Example output:
 ```
-Websocket server running.
 No active connections.
-Connection from 0b5f1b13-5bca-418a-8712-8314d85d0796 received.
+ConnectionClosed.
+<websockets.legacy.server.WebSocketServerProtocol object at 0x7fd06bd93130>
+Connection from 063a8414-850d-4bda-a323-2350d96a5f23 received.
 Active connections: 1
-{15115325313996918011285746583835838358: {'x': 1735, 'y': 5697, 'health': 100, 'ping': 250}}
-{15115325313996918011285746583835838358: {'x': 1735, 'y': 5697, 'health': 100, 'ping': 250}}
-{15115325313996918011285746583835838358: {'x': 1735, 'y': 5697, 'health': 100, 'ping': 250}}
-{15115325313996918011285746583835838358: {'x': 1735, 'y': 5697, 'health': 100, 'ping': 250}}
-{15115325313996918011285746583835838358: {'x': 1735, 'y': 5697, 'health': 100, 'ping': 250}}
+ClientHandler 063a8414-850d-4bda-a323-2350d96a5f23 disconnected.
+No active connections.
+ConnectionClosed.
+<websockets.legacy.server.WebSocketServerProtocol object at 0x7fd06bd93190>
+Connection from 4b873e29-9cb3-4b68-a237-54e5c24cf2f9 received.
+Active connections: 1
+<websockets.legacy.server.WebSocketServerProtocol object at 0x7fd06bd92c20>
+Connection from 529c53cf-a605-4140-90aa-efc9c7d26566 received.
+Active connections: 2
+ClientHandler 529c53cf-a605-4140-90aa-efc9c7d26566 disconnected.
+Active connections: 1
+ConnectionClosed.
+ClientHandler 4b873e29-9cb3-4b68-a237-54e5c24cf2f9 disconnected.
+No active connections.
+ClientHandler 4b873e29-9cb3-4b68-a237-54e5c24cf2f9 disconnected.
 ...
 ...
 ...
@@ -34,11 +45,13 @@ Active connections: 1
 
 4. Once the server starts, run the following to start a client: ```python main.py```.
 
-5. You will be presented with an option to change the ip address of the server. This defaults to `port 8765` on `127.0.0.1` / `localhost`
+5. You will be presented with a screen displaying the default ip address of the server. This is currently `port 8765` on `127.0.0.1` / `localhost`.
+
+    Currently *not implemented*. See future development goals below.
 
 6. You can use your directional keys to control movement and see data getting transmitted through the active websocket connection.
 
-7. **Enjoy!**
+7. Use the LEFT mouse button for a flameshot attack. **Enjoy!**
 
 ![](./client/assets/Screenshot_Game_Play.png)
 
@@ -47,5 +60,7 @@ Krishy Fishy | MyApaulogies | rami.alloush | Pixler | gvsa123
 
 ## Future Development
 As part of the challenge, we wanted to focus on getting the functionality of the required technologies working before implementing more advanced game-related functionality and features. Below is an outline of what we would like to continue working on:
-1. Use ping attacks to slow the movement of another player allowing others to fire more aggressive weapons.
-2. Multiplayer LAN functionality
+
+1. Implement menu functionality.
+2. Use ping attacks to slow the movement of another player allowing others to fire more aggressive weapons.
+3. Multiplayer LAN functionality.
