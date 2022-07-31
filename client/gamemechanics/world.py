@@ -23,14 +23,26 @@ class World:
 
     def update(self, server_updates: ThreadSafeQueue):
         """Update `main_player` and `objects`. Manages bullet collisions, motion, etc."""
-        while update := server_updates.pop():
-            self.flameshots = []
-            self.players = []
+        # region Retrieve data from server and update World accordingly
+        update = None
+        while server_updates.peek():
+            update = server_updates.pop()
+            # manage one-time events
+        if update:
+            # after loop ends, use most recent info for player positions
             for player_id, player_data in update.items():
                 if player_data["type"] == "player":
                     self.players.append(Player(player_data["x"], player_data["y"], player_id))
+        # endregion
 
+        # Update animation cycle of existing flameshots via .phase_tick()
         self.flameshots = [fs for fs in self.flameshots if not fs.phase_tick()]
+
+        # Implementation note -- the client should only check if their own main_player was damaged
+        # They should not report other players' deaths and damage
+        for fs in self.flameshots:
+            if fs.colliderect(self.main_player.hitbox_rect):
+                self.main_player.health -= 40
 
     def absolute_to_relative(self, coord: tuple[int, int]) -> tuple[int, int]:
         """Converts an absolute x, y coordinate to one relative to the top left of the user's screen"""

@@ -27,3 +27,7 @@ class ThreadSafeQueue:
             if self._contents:
                 return self._contents[0]
             return None
+
+    def locked(self) -> bool:
+        """Check if lock is acquired."""
+        return self._lock.locked()
