@@ -9,8 +9,9 @@ from client.gamemechanics.gameobject import GameObject
 class FlameShot(GameObject, Collidable):
     """A kind of short-range projectile that travels, grows, and sputters out."""
 
-    def __init__(self, x, y, facing: tuple[int, int]) -> None:
+    def __init__(self, x, y, facing: tuple[int, int], no_damage=False) -> None:
         super().__init__(x, y)
+        self.no_damage = no_damage
         self.phase = 0
         self._tick = 0
         # the amount of frames between each phase++
@@ -78,7 +79,7 @@ class FlameShot(GameObject, Collidable):
 
     # TODO below
     def collidepoint(self, x: int, y: int) -> bool:
-        """Check point for collisions with any of the fire rects."""
+        """Check point for collisions with any of the fire rects. Uses absolute coordinates."""
         if self.phase < 5:
             if self._colrect1.collidepoint(x, y):
                 return True
@@ -91,7 +92,7 @@ class FlameShot(GameObject, Collidable):
         return False
 
     def colliderect(self, rect: pygame.Rect) -> bool:
-        """Check rect for collisions with any of the fire rects."""
+        """Check rect for collisions with any of the fire rects. Uses absolute coordinates."""
         if self.phase < 5:
             if self._colrect1.colliderect(rect):
                 return True

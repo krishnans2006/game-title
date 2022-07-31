@@ -56,7 +56,7 @@ class ClientHandler:
         """
         await self.connection.send(encode(to_send))
         server_response: dict = decode(await self.connection.recv())
-        print(f"Server response: {server_response}")
+        # print(f"Server response: {server_response}")
         return server_response
 
     async def close(self):

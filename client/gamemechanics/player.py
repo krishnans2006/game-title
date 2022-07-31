@@ -33,12 +33,15 @@ class Player(GameObject, Collidable):
         self.y: int = y
         self.width: int = 60
         self.height: int = 60
-        self.hitbox_rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.name: str = name
 
         self.health: int = 100
         self.gun: None = None
         self.ping: int = 250
+
+    def hitbox_rect(self):
+        """Returns hitbox rect, in terms of absolute coordinates."""
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
     def move(self, direction: str, distance: int):
         """Moves the player in the given direction by the given distance.
@@ -136,6 +139,7 @@ class Player(GameObject, Collidable):
             ),
         )
 
+    # TODO make sure everything is lined up
     def draw_at(self, window: pygame.Surface, x: int, y: int):
         """Draws relative to top left of screen."""
         pygame.draw.rect(
@@ -212,8 +216,8 @@ class Player(GameObject, Collidable):
 
     def collidepoint(self, x: int, y: int) -> bool:
         """See superclass."""
-        return self.hitbox_rect.collidepoint(x, y)
+        return self.hitbox_rect().collidepoint(x, y)
 
     def colliderect(self, rect: pygame.Rect) -> bool:
         """See superclass."""
-        return self.hitbox_rect.colliderect(rect)
+        return self.hitbox_rect().colliderect(rect)

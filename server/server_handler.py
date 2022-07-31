@@ -132,7 +132,7 @@ async def connection_handler(
 async def main():
     """Initialize websocket server."""
     async with websockets.serve(
-        connection_handler, "127.0.0.1", 8765, ping_timeout=5, ping_interval=5
+        connection_handler, "127.0.0.1", 8765, ping_timeout=5, ping_interval=1
     ):
         print("Websocket server running.")
         count_active_connections()

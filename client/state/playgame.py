@@ -45,7 +45,7 @@ class PlayGame(GameState):
         TODO: should send player position (done), orientation, weapon type, events such as
         bullet creation, weapon switching, changes in health, changes
         """
-        return self.main_player.to_dict()
+        return self.world.to_dict()
 
     async def update_client(self):
         """Thread that repeatedly updates the websocket connection.
@@ -58,14 +58,22 @@ class PlayGame(GameState):
         await self.websocket.connect()
         while True:
             await asyncio.sleep(0.1)
+
+            import time
+
+            t1 = time.time()
+
             if self.thread_cancelled:
                 break
             if self.websocket:
                 res = await self.websocket.update(self.client_payload_dict())
                 self.server_response_queue.append(res)
-                print(f"client: received {res}")
+                # print(f"client: received {res}")
             else:
                 print("No websocket connection")
+
+            t2 = time.time()
+            print(f"Elapsed: {t2-t1}")
 
         print("\nClient thread cleaning up!\n")
 
@@ -86,6 +94,7 @@ class PlayGame(GameState):
         # endregion
 
         # region Load new objects into World
+        # DEBUGGING NOTE + TODO: game still freezes when this line is commented out
         self.world.update(self.server_response_queue)
         # TODO: actually load them once the world's methods are implemented
 
@@ -101,7 +110,9 @@ class PlayGame(GameState):
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 direction = mouse_x - c.W // 2, mouse_y - c.H // 2
                 print(direction)
-                projectile = FlameShot(self.main_player.x, self.main_player.y, direction)
+                projectile = FlameShot(
+                    self.main_player.x, self.main_player.y, direction, no_damage=True
+                )
                 self.world.spawn_flameshot(projectile)
 
         keys = pygame.key.get_pressed()
