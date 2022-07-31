@@ -77,67 +77,7 @@ class Player(GameObject, Collidable):
             window: The window to draw the player on.
 
         """
-        pygame.draw.rect(
-            window,
-            (0, 0, 0),
-            (
-                c.W // 2 - self.width // 2,
-                c.H // 2 - self.height // 2,
-                self.width,
-                self.height,
-            ),
-        )
-
-        text = c.text_font.render(f"{self.ping}ms", True, (255, 255, 255))
-        Rectangle.draw_rect_alpha(
-            window,
-            (0, 0, 0, 120),
-            (
-                c.W // 2 - text.get_width() // 2 - 2,
-                c.H // 2 - self.height // 2 - text.get_height() - 8,
-                text.get_width() + 4,
-                text.get_height() + 4,
-            ),
-        )
-        window.blit(
-            text,
-            (
-                c.W // 2 - text.get_width() // 2,
-                c.H // 2 - self.height // 2 - text.get_height() - 5,
-            ),
-        )
-
-        pygame.draw.rect(
-            window,
-            (0, 0, 0),
-            (
-                c.W // 2 - self.width // 2,
-                c.H // 2 + self.height // 2 + 3,
-                self.width,
-                20,
-            ),
-        )
-        scale_factor = self.width - 6
-        pygame.draw.rect(
-            window,
-            (255, 0, 0),
-            (
-                c.W // 2 - self.width // 2 + 3,
-                c.H // 2 + self.height // 2 + 6,
-                scale_factor,
-                14,
-            ),
-        )
-        pygame.draw.rect(
-            window,
-            (0, 255, 0),
-            (
-                c.W // 2 - self.width // 2 + 3,
-                c.H // 2 + self.height // 2 + 6,
-                scale_factor * (self.health / 100),
-                14,
-            ),
-        )
+        self.draw_at(window, c.W // 2, c.H // 2)
 
     # TODO make sure everything is lined up
     def draw_at(self, window: pygame.Surface, x: int, y: int):
@@ -158,8 +98,8 @@ class Player(GameObject, Collidable):
             window,
             (0, 0, 0, 120),
             (
-                c.W // 2 - text.get_width() // 2 - 2,
-                c.H // 2 - self.height // 2 - text.get_height() - 8,
+                x - text.get_width() // 2 - 2,
+                y - self.height // 2 - text.get_height() - 8,
                 text.get_width() + 4,
                 text.get_height() + 4,
             ),
@@ -167,8 +107,8 @@ class Player(GameObject, Collidable):
         window.blit(
             text,
             (
-                c.W // 2 - text.get_width() // 2,
-                c.H // 2 - self.height // 2 - text.get_height() - 5,
+                x - text.get_width() // 2,
+                y - self.height // 2 - text.get_height() - 5,
             ),
         )
 
@@ -176,8 +116,8 @@ class Player(GameObject, Collidable):
             window,
             (0, 0, 0),
             (
-                c.W // 2 - self.width // 2,
-                c.H // 2 + self.height // 2 + 3,
+                x - self.width // 2,
+                y + self.height // 2 + 3,
                 self.width,
                 20,
             ),
@@ -187,8 +127,8 @@ class Player(GameObject, Collidable):
             window,
             (255, 0, 0),
             (
-                c.W // 2 - self.width // 2 + 3,
-                c.H // 2 + self.height // 2 + 6,
+                x - self.width // 2 + 3,
+                y + self.height // 2 + 6,
                 scale_factor,
                 14,
             ),
@@ -197,8 +137,8 @@ class Player(GameObject, Collidable):
             window,
             (0, 255, 0),
             (
-                c.W // 2 - self.width // 2 + 3,
-                c.H // 2 + self.height // 2 + 6,
+                x - self.width // 2 + 3,
+                y + self.height // 2 + 6,
                 scale_factor * (self.health / 100),
                 14,
             ),
