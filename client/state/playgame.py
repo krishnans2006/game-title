@@ -85,10 +85,8 @@ class PlayGame(GameState):
         # endregion
 
         # region Load new objects into World
-        while res := self.server_response_queue.pop():
-            res: dict
-            print(res)
-            # TODO: actually load them once the world's methods are implemented
+        self.world.update(self.server_response_queue)
+        # TODO: actually load them once the world's methods are implemented
 
         # endregion
 

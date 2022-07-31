@@ -10,6 +10,7 @@ class GameObject(ABC):
     def __init__(self, x: Number, y: Number) -> None:
         self.x = x
         self.y = y
+        # self.id = _id
         self.visibility_rect: pygame.Rect
 
     @abstractmethod

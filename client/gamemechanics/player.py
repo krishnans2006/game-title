@@ -21,6 +21,7 @@ class Player(GameObject, Collidable):
     """
 
     def __init__(self, x: int, y: int, name: str = "Player1"):
+        super().__init__(x, y)
         """Initializes the player.
 
         Args:
@@ -136,9 +137,74 @@ class Player(GameObject, Collidable):
             ),
         )
 
+    def draw_at(self, window: pygame.Surface, x: int, y: int):
+        """Draws relative to top left of screen."""
+        pygame.draw.rect(
+            window,
+            (0, 0, 0),
+            (
+                x - self.width // 2,
+                y - self.height // 2,
+                self.width,
+                self.height,
+            ),
+        )
+
+        text = c.text_font.render(f"{self.ping}ms", True, (255, 255, 255))
+        Rectangle.draw_rect_alpha(
+            window,
+            (0, 0, 0, 120),
+            (
+                c.W // 2 - text.get_width() // 2 - 2,
+                c.H // 2 - self.height // 2 - text.get_height() - 8,
+                text.get_width() + 4,
+                text.get_height() + 4,
+            ),
+        )
+        window.blit(
+            text,
+            (
+                c.W // 2 - text.get_width() // 2,
+                c.H // 2 - self.height // 2 - text.get_height() - 5,
+            ),
+        )
+
+        pygame.draw.rect(
+            window,
+            (0, 0, 0),
+            (
+                c.W // 2 - self.width // 2,
+                c.H // 2 + self.height // 2 + 3,
+                self.width,
+                20,
+            ),
+        )
+        scale_factor = self.width - 6
+        pygame.draw.rect(
+            window,
+            (255, 0, 0),
+            (
+                c.W // 2 - self.width // 2 + 3,
+                c.H // 2 + self.height // 2 + 6,
+                scale_factor,
+                14,
+            ),
+        )
+        pygame.draw.rect(
+            window,
+            (0, 255, 0),
+            (
+                c.W // 2 - self.width // 2 + 3,
+                c.H // 2 + self.height // 2 + 6,
+                scale_factor * (self.health / 100),
+                14,
+            ),
+        )
+
     def to_dict(self):
         """Returns a dictionary representation of the player for easy transmission."""
         return {
+            "type": "player",
             "x": self.x,
             "y": self.y,
             "health": self.health,
@@ -152,7 +218,3 @@ class Player(GameObject, Collidable):
     def colliderect(self, rect: pygame.Rect) -> bool:
         """See superclass."""
         return self.hitbox_rect.colliderect(rect)
-
-    def draw_at(self, window: pygame.Surface, x: int, y: int):
-        """See superclass."""
-        pass  # TODO TODO TODO TODO TODO TODO TODO

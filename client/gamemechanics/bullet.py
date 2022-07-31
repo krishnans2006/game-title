@@ -1,4 +1,4 @@
-from typing import Tuple
+from numbers import Number
 
 import pygame
 
@@ -14,8 +14,8 @@ class Bullet(GameObject, Collidable):
         eventually reach if it traveled in a straight line.
     """
 
-    def __init__(self, xy: Tuple[int, int], facing: Tuple[int, int]) -> None:
-        self.x, self.y = xy
+    def __init__(self, x: Number, y: Number) -> None:
+        super().__init__(x, y)
 
     def collidepoint(self, x: int, y: int) -> bool:
         """See superclass."""
