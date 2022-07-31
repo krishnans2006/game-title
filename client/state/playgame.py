@@ -7,6 +7,7 @@ import pygame
 
 from client import config as c
 from client.client_handler import ClientHandler
+from client.gamemechanics.flame_shot import FlameShot
 from client.gamemechanics.player import Player
 from client.gamemechanics.world import World
 from client.state.gamestate import GameState
@@ -56,7 +57,7 @@ class PlayGame(GameState):
         # TODO: timeout error handling, etc.
         await self.websocket.connect()
         while True:
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.1)
             if self.thread_cancelled:
                 break
             if self.websocket:
@@ -95,9 +96,13 @@ class PlayGame(GameState):
                 print("quit")
                 await self.cleanup()
 
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     # TODO: check whether click is left or right
-            #     self.world.spawn_object(Bullet())
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # TODO: check whether click is left or right
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                direction = mouse_x - c.W // 2, mouse_y - c.H // 2
+                print(direction)
+                projectile = FlameShot(self.main_player.x, self.main_player.y, direction)
+                self.world.spawn_flameshot(projectile)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:

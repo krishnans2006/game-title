@@ -11,7 +11,6 @@ class GameObject(ABC):
         self.x = x
         self.y = y
         # self.id = _id
-        self.visibility_rect: pygame.Rect
 
     @abstractmethod
     def to_dict(self):

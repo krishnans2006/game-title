@@ -33,9 +33,7 @@ class Player(GameObject, Collidable):
         self.y: int = y
         self.width: int = 60
         self.height: int = 60
-        self.hitbox_rect = self.visibility_rect = pygame.Rect(
-            self.x, self.y, self.width, self.height
-        )
+        self.hitbox_rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.name: str = name
 
         self.health: int = 100
@@ -68,6 +66,7 @@ class Player(GameObject, Collidable):
         if self.y + self.height // 2 > c.TH:
             self.y = c.TH - self.height // 2
 
+    # maybe todo: just call self.draw_at(0, 0) ?
     def redraw(self, window: pygame.Surface):
         """Redraws the player on the given window.
 
