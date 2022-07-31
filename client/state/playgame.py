@@ -7,7 +7,6 @@ import pygame
 
 from client import config as c
 from client.client_handler import ClientHandler
-from client.gamemechanics.bullet import Bullet
 from client.gamemechanics.player import Player
 from client.gamemechanics.world import World
 from client.state.gamestate import GameState
@@ -54,6 +53,7 @@ class PlayGame(GameState):
         other players.
 
         """
+        # TODO: timeout error handling, etc.
         await self.websocket.connect()
         while True:
             await asyncio.sleep(0.5)
@@ -62,6 +62,7 @@ class PlayGame(GameState):
             if self.websocket:
                 res = await self.websocket.update(self.client_payload_dict())
                 self.server_response_queue.append(res)
+                print(f"client: received {res}")
             else:
                 print("No websocket connection")
 
@@ -77,10 +78,10 @@ class PlayGame(GameState):
         if not self.websocket:
             self.update_thread = Thread(
                 target=asyncio.get_event_loop().run_until_complete,
-                args=(self.update_client()),
+                args=(self.update_client(),),
             )
-            self.update_thread.start()
             self.websocket = websocket
+            self.update_thread.start()
         # endregion
 
         # region Load new objects into World
@@ -96,9 +97,9 @@ class PlayGame(GameState):
                 print("quit")
                 await self.cleanup()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # TODO: check whether click is left or right
-                self.world.spawn_object(Bullet())
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     # TODO: check whether click is left or right
+            #     self.world.spawn_object(Bullet())
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:

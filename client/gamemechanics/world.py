@@ -12,14 +12,8 @@ from client.gamemechanics.player import Player
 class World:
     """Manages the objects on the map. Deals with creation, deletion, collisions, etc."""
 
-    def __init__(self) -> None:
+    def __init__(self, player: Player) -> None:
         self.objects: List[GameObject] = []
-
-    def set_main_player(self, player: Player):
-        """Lets the World know who the main character is.
-
-        Necessary to render objects relative to the main player, who is fixed to the center of the screen.
-        """
         self.main_player = player
 
     def spawn_object(self, obj: GameObject):
@@ -27,10 +21,10 @@ class World:
         self.objects.append(obj)
 
     def update(self):
-        """Update. Manages bullet collisions, etc. TODO"""
+        """Update `main_player` and `objects`. Manages bullet collisions, motion, etc. TODO"""
         pass
 
-    def redraw(self, window: pygame.Window):
+    def redraw(self, window: pygame.Surface):
         """Draw all game objects, including the player.
 
         The player is included so that the layering of objects is correct.
