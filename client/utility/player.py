@@ -61,6 +61,8 @@ class Player(object):
         if self.y + self.height // 2 > c.TH:
             self.y = c.TH - self.height // 2
 
+        print(f"FROM PLAYER: {self.to_dict()}")
+
     def redraw(self, window: pygame.Surface):
         """Redraws the player on the given window.
 
