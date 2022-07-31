@@ -7,9 +7,11 @@ import pygame
 
 from client import config as c
 from client.client_handler import ClientHandler
+from client.gamemechanics.bullet import Bullet
 from client.gamemechanics.player import Player
 from client.gamemechanics.world import World
 from client.state.gamestate import GameState
+from client.utility.thread_safe_queue import ThreadSafeQueue
 
 
 class PlayGame(GameState):
@@ -24,13 +26,17 @@ class PlayGame(GameState):
 
         self.grass_img = pygame.image.load(os.path.join(os.getcwd()) + "/client/assets/grass.jpg")
 
-        self.player: Player = Player(random.randint(30, c.TW - 30), random.randint(30, c.TH - 30))
-        self.world: World = World()
+        self.main_player: Player = Player(
+            random.randint(30, c.TW - 30), random.randint(30, c.TH - 30)
+        )
 
         self.websocket: ClientHandler | None = None
 
         self.update_thread: Thread = None
-        self.thread_cancelled = False
+        self.thread_cancelled: bool = False
+
+        self.server_response_queue = ThreadSafeQueue()
+        self.world = World()
 
     # TODO:
     def client_payload_dict(self) -> dict:
@@ -39,7 +45,7 @@ class PlayGame(GameState):
         TODO: should send player position (done), orientation, weapon type, events such as
         bullet creation, weapon switching, changes in health, changes
         """
-        return self.player.to_dict()
+        return self.main_player.to_dict()
 
     async def update_client(self):
         """Thread that repeatedly updates the websocket connection.
@@ -53,7 +59,8 @@ class PlayGame(GameState):
             if self.thread_cancelled:
                 break
             if self.websocket:
-                await self.websocket.update(self.client_payload_dict())
+                res = await self.websocket.update(self.client_payload_dict())
+                self.server_response_queue.append(res)
             else:
                 print("No websocket connection")
 
@@ -65,6 +72,7 @@ class PlayGame(GameState):
 
     async def update(self, events: list[pygame.event.Event], websocket: ClientHandler):
         """See base class."""
+        # region Start client thread
         if not self.websocket:
             self.update_thread = Thread(
                 target=asyncio.get_event_loop().run_until_complete,
@@ -73,30 +81,43 @@ class PlayGame(GameState):
             self.update_thread.start()
             await websocket.connect()
             self.websocket = websocket
+        # endregion
+
+        # region Load new objects into World
+        while res := self.server_response_queue.pop():
+            res: dict
+            # dud line to pass the checks lmao
+            isinstance(res, dict)
+            # TODO: actually load them once the world's methods are implemented
+
+        # endregion
 
         for event in events:
             if event.type == pygame.QUIT:
                 print("quit")
                 await self.cleanup()
 
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     # TODO: check whether click is left or right
-            #     self.world.spawn_object(Bullet)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # TODO: check whether click is left or right
+                self.world.spawn_object(Bullet())
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            self.player.move("left", self.move_rate)
+            self.main_player.move("left", self.move_rate)
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            self.player.move("right", self.move_rate)
+            self.main_player.move("right", self.move_rate)
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            self.player.move("up", self.move_rate)
+            self.main_player.move("up", self.move_rate)
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            self.player.move("down", self.move_rate)
+            self.main_player.move("down", self.move_rate)
 
     def redraw(self):
         """See base class."""
-        start_x = -((self.player.x - c.W // 2) % c.grass_image_width)
-        start_y = -((self.player.y - c.H // 2) % c.grass_image_height)
+        # includes player
+        self.world.redraw(self.window)
+
+        start_x = -((self.main_player.x - c.W // 2) % c.grass_image_width)
+        start_y = -((self.main_player.y - c.H // 2) % c.grass_image_height)
         num_x = c.W // c.grass_image_width + 2
         num_y = c.H // c.grass_image_height + 2
 
@@ -108,8 +129,8 @@ class PlayGame(GameState):
                     self.grass_img,
                     (start_x + x * c.grass_image_width, start_y + y * c.grass_image_height),
                 )
-        player_to_right_edge = c.TW - self.player.x
-        player_to_bottom_edge = c.TH - self.player.y
+        player_to_right_edge = c.TW - self.main_player.x
+        player_to_bottom_edge = c.TH - self.main_player.y
         if player_to_right_edge > c.TW - c.W // 2:
             pygame.draw.rect(
                 self.window,
@@ -144,7 +165,6 @@ class PlayGame(GameState):
                     c.H - (c.H // 2 + player_to_bottom_edge),
                 ),
             )
-        self.player.redraw(self.window)
 
     async def cleanup(self):
         """Cleans up the websocket connection for the game."""

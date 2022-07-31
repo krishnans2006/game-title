@@ -32,7 +32,9 @@ class Player(GameObject, Collidable):
         self.y: int = y
         self.width: int = 60
         self.height: int = 60
-        self.hitbox_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.hitbox_rect = self.visibility_rect = pygame.Rect(
+            self.x, self.y, self.width, self.height
+        )
         self.name: str = name
 
         self.health: int = 100
