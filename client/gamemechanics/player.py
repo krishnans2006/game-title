@@ -152,3 +152,7 @@ class Player(GameObject, Collidable):
     def colliderect(self, rect: pygame.Rect) -> bool:
         """See superclass."""
         return self.hitbox_rect.colliderect(rect)
+
+    def draw_at(self, window: pygame.Surface, x: int, y: int):
+        """See superclass."""
+        pass  # TODO TODO TODO TODO TODO TODO TODO

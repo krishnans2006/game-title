@@ -36,7 +36,7 @@ class PlayGame(GameState):
         self.thread_cancelled: bool = False
 
         self.server_response_queue = ThreadSafeQueue()
-        self.world = World()
+        self.world = World(self.main_player)
 
     # TODO:
     def client_payload_dict(self) -> dict:
@@ -54,6 +54,7 @@ class PlayGame(GameState):
         other players.
 
         """
+        await self.websocket.connect()
         while True:
             await asyncio.sleep(0.5)
             if self.thread_cancelled:
@@ -76,18 +77,16 @@ class PlayGame(GameState):
         if not self.websocket:
             self.update_thread = Thread(
                 target=asyncio.get_event_loop().run_until_complete,
-                args=(self.update_client(),),
+                args=(self.update_client()),
             )
             self.update_thread.start()
-            await websocket.connect()
             self.websocket = websocket
         # endregion
 
         # region Load new objects into World
         while res := self.server_response_queue.pop():
             res: dict
-            # dud line to pass the checks lmao
-            isinstance(res, dict)
+            print(res)
             # TODO: actually load them once the world's methods are implemented
 
         # endregion
@@ -113,9 +112,6 @@ class PlayGame(GameState):
 
     def redraw(self):
         """See base class."""
-        # includes player
-        self.world.redraw(self.window)
-
         start_x = -((self.main_player.x - c.W // 2) % c.grass_image_width)
         start_y = -((self.main_player.y - c.H // 2) % c.grass_image_height)
         num_x = c.W // c.grass_image_width + 2
@@ -165,6 +161,9 @@ class PlayGame(GameState):
                     c.H - (c.H // 2 + player_to_bottom_edge),
                 ),
             )
+
+        # includes player
+        self.world.redraw(self.window)
 
     async def cleanup(self):
         """Cleans up the websocket connection for the game."""
